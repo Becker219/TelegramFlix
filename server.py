@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from telethon import TelegramClient
 from dotenv import load_dotenv
+from telethon.sessions import StringSession
 
 # Cargar credenciales
 load_dotenv()
@@ -17,7 +18,8 @@ API_HASH = os.getenv('API_HASH')
 CHAT_ID = int(os.getenv('CHAT_ID'))
 
 # Inicializar cliente de Telegram
-cliente = TelegramClient('mi_sesion', API_ID, API_HASH)
+SESSION_STRING = os.getenv('TELEGRAM_SESSION')
+cliente = TelegramClient(StringSession(SESSION_STRING), API_ID, API_HASH)
 
 # Administrador de contexto para el ciclo de vida (Lifespan)
 @asynccontextmanager
