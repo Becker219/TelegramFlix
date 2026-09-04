@@ -9,7 +9,7 @@ function App() {
   const [sincronizando, setSincronizando] = useState(false);
 
   const obtenerCatalogo = () => {
-    fetch('https://telegramflix.onrender.com')
+    fetch('https://telegramflix.onrender.com/catalogo')
       .then(response => response.json())
       .then(data => setSeries(data.series))
       .catch(error => console.error("Error conectando al servidor:", error))
