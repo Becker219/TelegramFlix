@@ -21,15 +21,52 @@ CHAT_ID = int(os.getenv('CHAT_ID'))
 SESSION_STRING = os.getenv('TELEGRAM_SESSION')
 cliente = TelegramClient(StringSession(SESSION_STRING), API_ID, API_HASH)
 
+def inicializar_db():
+    conexion = sqlite3.connect("database.db")
+    cursor = conexion.cursor()
+    
+    # Crear tabla Serie si no existe
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS Serie (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            titulo TEXT,
+            poster_message_id INTEGER,
+            categoria TEXT
+        )
+    ''')
+    
+    # Crear tabla Capitulo si no existe
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS Capitulo (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            serie_id INTEGER,
+            temporada INTEGER,
+            numero INTEGER,
+            video_message_id INTEGER,
+            thumbnail_message_id INTEGER,
+            FOREIGN KEY(serie_id) REFERENCES Serie(id)
+        )
+    ''')
+    
+    conexion.commit()
+    conexion.close()
+    print("🗄️ Base de datos verificada/inicializada.")
+
 # Administrador de contexto para el ciclo de vida (Lifespan)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # --- 1. Preparamos la base de datos local ---
+    inicializar_db()
+
+    # --- 2. Conectamos a Telegram ---
     print("🚀 Conectando a Telegram...")
     await cliente.connect()
     print("✅ Conexión establecida con éxito.")
     
+    # --- 3. Sincronizamos ---
     print("🔄 Reconstruyendo caché desde Telegram...")
     await sincronizar_biblioteca()
+    
     yield
     
     print("🛑 Desconectando de Telegram...")
