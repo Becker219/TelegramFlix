@@ -336,6 +336,20 @@ body {
   transform: translateX(-5px); /* Se desliza suavemente hacia la izquierda al pasar el mouse */
 }
 
+/* =========================================
+   REPRODUCTOR DE VIDEO RESPONSIVO
+   ========================================= */
+.video-player {
+  width: 100%;
+  max-width: 1000px; /* Evita que crezca demasiado en pantallas grandes */
+  height: auto;      /* Mantiene la proporción perfecta 16:9 */
+  border-radius: 8px;
+  background-color: #000;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+  display: block;
+  margin: 0 auto;    /* Centra el video automáticamente en la pantalla */
+}
+
 /* --- ADAPTACIÓN PARA CELULARES --- */
 @media (max-width: 768px) {
   .navbar {
