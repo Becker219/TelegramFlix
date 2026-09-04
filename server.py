@@ -25,24 +25,28 @@ def inicializar_db():
     conexion = sqlite3.connect("database.db")
     cursor = conexion.cursor()
     
-    # Crear tabla Serie si no existe
+    # 1. Borramos las tablas viejas (que no tenían la regla UNIQUE)
+    cursor.execute('DROP TABLE IF EXISTS Capitulo')
+    cursor.execute('DROP TABLE IF EXISTS Serie')
+    
+    # 2. Creamos la tabla Serie con poster_message_id como UNIQUE
     cursor.execute('''
-        CREATE TABLE IF NOT EXISTS Serie (
+        CREATE TABLE Serie (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             titulo TEXT,
-            poster_message_id INTEGER,
+            poster_message_id INTEGER UNIQUE,
             categoria TEXT
         )
     ''')
     
-    # Crear tabla Capitulo si no existe
+    # 3. Creamos la tabla Capitulo con video_message_id como UNIQUE
     cursor.execute('''
-        CREATE TABLE IF NOT EXISTS Capitulo (
+        CREATE TABLE Capitulo (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             serie_id INTEGER,
             temporada INTEGER,
             numero INTEGER,
-            video_message_id INTEGER,
+            video_message_id INTEGER UNIQUE,
             thumbnail_message_id INTEGER,
             FOREIGN KEY(serie_id) REFERENCES Serie(id)
         )
@@ -50,7 +54,7 @@ def inicializar_db():
     
     conexion.commit()
     conexion.close()
-    print("🗄️ Base de datos verificada/inicializada.")
+    print("🗄️ Base de datos verificada/inicializada con reglas UNIQUE.")
 
 # Administrador de contexto para el ciclo de vida (Lifespan)
 @asynccontextmanager
