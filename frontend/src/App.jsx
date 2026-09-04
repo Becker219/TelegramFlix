@@ -9,7 +9,7 @@ function App() {
   const [sincronizando, setSincronizando] = useState(false);
 
   const obtenerCatalogo = () => {
-    fetch('http://127.0.0.1:8000/catalogo')
+    fetch('https://telegramflix.onrender.com')
       .then(response => response.json())
       .then(data => setSeries(data.series))
       .catch(error => console.error("Error conectando al servidor:", error))
@@ -21,7 +21,7 @@ function App() {
 
   const seleccionarSerie = (serie) => {
     setSerieSeleccionada(serie)
-    fetch(`http://127.0.0.1:8000/capitulos/${serie.id}`)
+    fetch(`https://telegramflix.onrender.com/capitulos/${serie.id}`)
       .then(response => response.json())
       .then(data => setCapitulos(data.capitulos))
       .catch(error => console.error("Error trayendo capítulos:", error))
@@ -35,7 +35,7 @@ function App() {
   const sincronizarBiblioteca = async () => {
     setSincronizando(true);
     try {
-      const respuesta = await fetch("http://127.0.0.1:8000/sincronizar");
+      const respuesta = await fetch("https://telegramflix.onrender.com/sincronizar");
       await respuesta.json();
       obtenerCatalogo(); 
     } catch (error) {
@@ -50,7 +50,7 @@ function App() {
     if (!window.confirm("¿Seguro que quieres eliminar esta serie de la biblioteca?")) return;
     
     try {
-      const respuesta = await fetch(`http://127.0.0.1:8000/serie/${serieId}`, {
+      const respuesta = await fetch(`https://telegramflix.onrender.com/serie/${serieId}`, {
         method: "DELETE"
       });
       if (respuesta.ok) obtenerCatalogo();
@@ -127,7 +127,7 @@ function App() {
               <h2>S{capituloReproduciendo.temporada.toString().padStart(2, '0')}E{capituloReproduciendo.numero.toString().padStart(2, '0')}</h2>
             </div>
             <video controls autoPlay className="video-player">
-              <source src={`http://127.0.0.1:8000/stream/${capituloReproduciendo.id}`} type="video/mp4" />
+              <source src={`https://telegramflix.onrender.com/stream/${capituloReproduciendo.id}`} type="video/mp4" />
             </video>
           </div>
         ) : 
@@ -142,7 +142,7 @@ function App() {
               {capitulos.map((cap) => (
                 <div key={cap.id} className="capitulo-item" onClick={() => setCapituloReproduciendo(cap)}>
                   <div className="cap-thumb-container">
-                    <img src={`http://127.0.0.1:8000/thumbnail/${cap.id}`} alt={`S${cap.temporada}E${cap.numero}`} className="cap-thumb" />
+                    <img src={`https://telegramflix.onrender.com/thumbnail/${cap.id}`} alt={`S${cap.temporada}E${cap.numero}`} className="cap-thumb" />
                     <span className="cap-play-icon">▶</span>
                   </div>
                   <div className="cap-info">
@@ -175,7 +175,7 @@ function App() {
                       </button>
 
                       <div className="image-container">
-                        <img src={`http://127.0.0.1:8000/poster/${serie.id}`} alt={serie.titulo} className="serie-poster" />
+                        <img src={`https://telegramflix.onrender.com/poster/${serie.id}`} alt={serie.titulo} className="serie-poster" />
                         <div className="overlay-play">
                           <span className="play-button-hover">▶</span>
                         </div>
