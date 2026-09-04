@@ -223,6 +223,8 @@ async def sincronizar_biblioteca():
 
     # Iteramos desde el mensaje más antiguo al más nuevo
     async for mensaje in cliente.iter_messages(CHAT_ID, reverse=True):
+
+        print(f"Mensaje leído: {mensaje.text} | Es archivo: {bool(mensaje.file)}")
         
         # CASO 1: SERIE
         if mensaje.text and mensaje.text.startswith('#'):
