@@ -1,0 +1,328 @@
+/* FONDOS Y TIPOGRAFÍA PROFESIONAL */
+body {
+  background-color: #141414; /* Color Netflix */
+  color: #e5e5e5;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* NAVBAR CON EFECTO CRISTAL (GLASSMORPHISM) */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 40px;
+  background: rgba(20, 20, 20, 0.85); /* Semitransparente */
+  backdrop-filter: blur(10px); /* Desenfoque del fondo */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+.logo {
+  color: #e50914; /* Rojo vibrante */
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+.logo:hover {
+  transform: scale(1.05);
+}
+
+/* MENÚ DE CATEGORÍAS */
+.nav-categorias {
+  display: flex;
+  gap: 20px;
+}
+
+.nav-link {
+  background: none;
+  border: none;
+  color: #b3b3b3;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-transform: capitalize;
+  transition: color 0.3s ease;
+  padding: 0;
+}
+.nav-link:hover {
+  color: #ffffff;
+}
+
+/* NUEVO BOTÓN ESTÉTICO DE ACTUALIZAR */
+.btn-actualizar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #e50914;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 20px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+
+.btn-actualizar:hover:not(:disabled) {
+  background-color: #f40612;
+  transform: translateY(-2px);
+}
+
+.btn-actualizar.cargando {
+  background-color: #555;
+  cursor: wait;
+}
+
+/* Animación de giro para el ícono de sync */
+.icono-sync {
+  display: inline-block;
+  font-size: 1.2rem;
+  transition: transform 0.3s;
+}
+.cargando .icono-sync {
+  animation: girar 1s linear infinite;
+}
+@keyframes girar {
+  100% { transform: rotate(360deg); }
+}
+
+/* SECCIONES DE CATEGORÍAS */
+.categoria-section {
+  margin-bottom: 50px;
+  padding: 0 40px;
+}
+.categoria-titulo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 15px;
+  text-transform: capitalize;
+  color: #e5e5e5;
+}
+
+/* GRID DE SERIES Y HOVER EFFECTS */
+.series-grid {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.serie-card {
+  position: relative;
+  width: 250px;
+  border-radius: 8px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.serie-card:hover {
+  transform: scale(1.05); /* Efecto de zoom */
+  box-shadow: 0 10px 20px rgba(0,0,0,0.8);
+  z-index: 10;
+}
+
+.serie-poster {
+  width: 100%;
+  height: 375px;
+  object-fit: cover;
+  border-radius: 8px;
+  display: block;
+}
+
+.serie-title {
+  margin-top: 10px;
+  font-size: 1.1rem;
+  text-align: center;
+  color: #fff;
+}
+
+/* BOTÓN ELIMINAR OCULTO Y ELEGANTE */
+.btn-eliminar-hover {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(20, 20, 20, 0.8);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  z-index: 20;
+  opacity: 0; /* Oculto por defecto */
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+}
+
+/* Al pasar el mouse por la tarjeta, el botón baja y aparece */
+.serie-card:hover .btn-eliminar-hover {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.btn-eliminar-hover:hover {
+  background-color: #e50914;
+  border-color: #e50914;
+}
+
+/* OVERLAY OSCURO AL HACER HOVER EN EL PÓSTER */
+.overlay-play {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  border-radius: 8px;
+}
+
+.serie-card:hover .overlay-play {
+  opacity: 1;
+}
+
+.play-button-hover {
+  font-size: 3rem;
+  color: white;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+  transform: scale(0.8);
+  transition: transform 0.3s ease;
+}
+.serie-card:hover .play-button-hover {
+  transform: scale(1);
+}
+
+/* --- VISTA DE CAPÍTULOS --- */
+
+/* Cuadrícula responsiva para los episodios */
+.capitulos-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  padding-top: 20px;
+}
+
+/* Tarjeta individual del capítulo */
+.capitulo-item {
+  cursor: pointer;
+  border-radius: 8px;
+  background-color: #1a1a1a;
+  overflow: hidden;
+  transition: background-color 0.3s ease;
+}
+
+.capitulo-item:hover {
+  background-color: #2a2a2a;
+}
+
+/* CONTENEDOR DE LA MINIATURA (Aquí ocurre la magia del tamaño) */
+.cap-thumb-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9; /* Fuerza la proporción de TV/Video */
+  background-color: #222; /* Fondo oscuro mientras carga */
+  overflow: hidden;
+}
+
+/* LA IMAGEN DE LA MINIATURA */
+.cap-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Encaja la imagen sin deformarla */
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.capitulo-item:hover .cap-thumb {
+  transform: scale(1.05); /* Pequeño zoom al pasar el mouse */
+}
+
+/* ÍCONO DE PLAY SOBRE LA MINIATURA */
+.cap-play-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2rem;
+  color: white;
+  background: rgba(0, 0, 0, 0.6);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0; /* Oculto por defecto */
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.capitulo-item:hover .cap-play-icon {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1.1); /* Aparece y crece un poco */
+}
+
+/* TEXTOS DEL CAPÍTULO */
+.cap-info {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.cap-numero {
+  color: #b3b3b3;
+  font-size: 0.85rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.cap-titulo {
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+/* --- BOTÓN DE VOLVER (BACK BUTTON) --- */
+.back-button {
+  background-color: transparent;
+  color: #b3b3b3;
+  border: none;
+  font-size: 1.1rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 15px 8px 0; /* Sin padding a la izquierda para que alinee con el título */
+  margin-bottom: 20px;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.back-button:hover {
+  color: #ffffff;
+  transform: translateX(-5px); /* Se desliza suavemente hacia la izquierda al pasar el mouse */
+}
