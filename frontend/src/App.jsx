@@ -20,11 +20,15 @@ function App() {
   }, [])
 
   const seleccionarSerie = (serie) => {
+    // 1. Guardamos la posición exacta de la pantalla en este momento
+    sessionStorage.setItem('posicionScroll', window.scrollY);
+    
     setSerieSeleccionada(serie)
     fetch(`https://telegramflix.onrender.com/capitulos/${serie.id}`)
       .then(response => response.json())
       .then(data => setCapitulos(data.capitulos))
       .catch(error => console.error("Error trayendo capítulos:", error))
+    
   }
 
   const irAlInicio = () => {
@@ -81,6 +85,17 @@ function App() {
       });
     }
   };
+
+    // Dentro de tu componente, antes del return():
+    useEffect(() => {
+    // Verificamos si hay un scroll guardado en la memoria
+    const scrollGuardado = sessionStorage.getItem('posicionScroll');
+  
+    if (scrollGuardado) {
+        // Obligamos al navegador a bajar hasta esa posición
+        window.scrollTo(0, parseInt(scrollGuardado));
+    }
+    }, []); // Los corchetes vacíos indican que esto solo se ejecuta 1 vez al cargar
 
   return (
     <div className="app-container">

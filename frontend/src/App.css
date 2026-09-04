@@ -118,18 +118,23 @@ body {
 
 /* GRID DE SERIES Y HOVER EFFECTS */
 .series-grid {
-  display: flex;
+  display: grid;
+  /* La magia responsive: Crea columnas automáticas. 
+     En celular ocupan 140px, en monitores grandes crecen para llenar el espacio */
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: 20px;
-  flex-wrap: wrap;
+  width: 100%;
 }
 
 .serie-card {
   position: relative;
-  width: 250px;
+  width: 100%; /* Toma todo el ancho de su columna en el grid */
   border-radius: 8px;
   cursor: pointer;
   overflow: hidden;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
 }
 .serie-card:hover {
   transform: scale(1.05); /* Efecto de zoom */
@@ -139,7 +144,7 @@ body {
 
 .serie-poster {
   width: 100%;
-  height: 375px;
+  aspect-ratio: 2 / 3; /* Obliga a la imagen a ser vertical (formato póster de cine) */
   object-fit: cover;
   border-radius: 8px;
   display: block;
@@ -147,9 +152,13 @@ body {
 
 .serie-title {
   margin-top: 10px;
-  font-size: 1.1rem;
+  font-size: 1rem; /* Un poco más pequeño para encajar mejor en móviles */
   text-align: center;
   color: #fff;
+  /* Estas 3 líneas ocultan el texto con "..." si el título es muy largo */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* BOTÓN ELIMINAR OCULTO Y ELEGANTE */
@@ -325,4 +334,23 @@ body {
 .back-button:hover {
   color: #ffffff;
   transform: translateX(-5px); /* Se desliza suavemente hacia la izquierda al pasar el mouse */
+}
+
+/* --- ADAPTACIÓN PARA CELULARES --- */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 10px 15px; /* Menos espacio a los lados */
+    flex-direction: column; /* Apila el logo arriba y los botones abajo */
+    gap: 15px;
+  }
+  
+  .navbar-left {
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .categoria-section {
+    padding: 0 15px; /* Evita que el catálogo choque con los bordes del celular */
+  }
 }
