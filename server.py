@@ -24,32 +24,30 @@ cliente = TelegramClient(StringSession(SESSION_STRING), API_ID, API_HASH)
 # Administrador de contexto para el ciclo de vida (Lifespan)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # --- Startup ---
     print("🚀 Conectando a Telegram...")
     await cliente.connect()
     print("✅ Conexión establecida con éxito.")
     
-    # ¡Auto-sincronizamos la base de datos si está vacía al arrancar!
     print("🔄 Reconstruyendo caché desde Telegram...")
     await sincronizar_biblioteca()
-    
     yield
     
-    # --- Shutdown ---
     print("🛑 Desconectando de Telegram...")
     await cliente.disconnect()
 
-# Inicializar FastAPI usando lifespan en lugar de on_event
+# Inicializar FastAPI (UNA SOLA VEZ)
 app = FastAPI(title="Servidor de Streaming Telegram", lifespan=lifespan)
 
-# Configuración CORS
+# Configuración CORS (UNA SOLA VEZ)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], 
+    allow_origins=["*"], # Permitir todas las conexiones temporalmente
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# ... (Aquí continúan tus endpoints @app.get...)
 
 @app.get("/poster/{serie_id}")
 async def obtener_poster(serie_id: int):
