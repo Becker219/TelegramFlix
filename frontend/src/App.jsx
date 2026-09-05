@@ -28,11 +28,17 @@ function App() {
       .then(response => response.json())
       .then(data => setCapitulos(data.capitulos))
       .catch(error => console.error("Error trayendo capítulos:", error))
-    
   }
 
+  // Función 1: Para el logo (va hasta arriba)
   const irAlInicio = () => {
-    const volverAlCatalogo = () => {
+    setSerieSeleccionada(null)
+    setCapituloReproduciendo(null)
+    window.scrollTo(0, 0);
+  }
+
+  // Función 2: Para el botón de "Volver al catálogo"
+  const volverAlCatalogo = () => {
     setSerieSeleccionada(null);
     setCapituloReproduciendo(null);
     
@@ -45,8 +51,6 @@ function App() {
       }
     }, 100);
   };
-  }
-  
 
   const sincronizarBiblioteca = async () => {
     setSincronizando(true);
@@ -98,16 +102,13 @@ function App() {
     }
   };
 
-    // Dentro de tu componente, antes del return():
-    useEffect(() => {
-    // Verificamos si hay un scroll guardado en la memoria
+  // Verificamos si hay un scroll guardado en la memoria al cargar la app
+  useEffect(() => {
     const scrollGuardado = sessionStorage.getItem('posicionScroll');
-  
     if (scrollGuardado) {
-        // Obligamos al navegador a bajar hasta esa posición
         window.scrollTo(0, parseInt(scrollGuardado));
     }
-    }, []); // Los corchetes vacíos indican que esto solo se ejecuta 1 vez al cargar
+  }, []); 
 
   return (
     <div className="app-container">
@@ -148,7 +149,8 @@ function App() {
         {capituloReproduciendo ? (
           <div className="player-container">
             <div className="player-header">
-              <button className="back-button" onClick={volverAlCatalogo}>
+              {/* Este botón solo cierra el reproductor y te deja en los episodios */}
+              <button className="back-button" onClick={() => setCapituloReproduciendo(null)}>
                 ⬅ Volver a episodios
               </button>
               <h2>S{capituloReproduciendo.temporada.toString().padStart(2, '0')}E{capituloReproduciendo.numero.toString().padStart(2, '0')}</h2>
@@ -161,7 +163,8 @@ function App() {
         
         serieSeleccionada ? (
           <div className="capitulos-container">
-            <button className="back-button" onClick={() => setCapituloReproduciendo(null)}>
+            {/* Este botón cierra la serie y te devuelve al catálogo en la posición correcta */}
+            <button className="back-button" onClick={volverAlCatalogo}>
               ⬅ Volver al catálogo
             </button>
             <h2 className="section-title">Capítulos de {serieSeleccionada.titulo}</h2>
@@ -185,14 +188,12 @@ function App() {
         (
           <div className="catalog">
             {Object.keys(seriesPorCategoria).map((categoria) => (
-              // Agregamos el ID dinámico para el scroll
               <div key={categoria} id={`cat-${categoria}`} className="categoria-section">
                 <h2 className="categoria-titulo">{categoria}</h2>
                 <div className="series-grid">
                   {seriesPorCategoria[categoria].map((serie) => (
                     <div key={serie.id} className="serie-card" onClick={() => seleccionarSerie(serie)}>
                       
-                      {/* BOTÓN ELIMINAR AHORA OCULTO POR DEFECTO */}
                       <button 
                         className="btn-eliminar-hover" 
                         onClick={(e) => eliminarSerie(e, serie.id)}
