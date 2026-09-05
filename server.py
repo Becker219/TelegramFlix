@@ -129,7 +129,7 @@ async def obtener_catalogo():
     return {"series": series}
 
 @app.get("/stream/{capitulo_id}")
-async def stream_video(capitulo_id: int, range: str = Header(None)):
+async def stream_video(capitulo_id: int, request: Request):
     conexion = sqlite3.connect("database.db")
     cursor = conexion.cursor()
     cursor.execute("SELECT video_message_id FROM Capitulo WHERE id = ?", (capitulo_id,))
@@ -147,17 +147,38 @@ async def stream_video(capitulo_id: int, range: str = Header(None)):
 
     peso_total = mensaje.document.size
 
+    # Usamos request.headers directamente para evitar problemas de compatibilidad
+    range_header = request.headers.get("Range")
+    
     start = 0
     end = peso_total - 1
     status_code = 200
 
-    if range:
-        match = re.search(r'bytes=(\d+)-(\d*)', range)
-        if match:
-            start = int(match.group(1))
-            if match.group(2):
-                end = int(match.group(2))
+    if range_header:
+        # Regex mejorada: detecta "0-100", "100-", y también rangos inversos "-500" que exige iOS
+        range_match = re.match(r'bytes=(?P<start>\d+)?-(?P<end>\d+)?', range_header)
+        if range_match:
+            start_str = range_match.group("start")
+            end_str = range_match.group("end")
+            
+            if start_str and end_str:
+                start = int(start_str)
+                end = int(end_str)
+            elif start_str: # Ej: "bytes=100-"
+                start = int(start_str)
+                end = peso_total - 1
+            elif end_str: # Ej: "bytes=-500" (Petición clásica de iPhone)
+                start = peso_total - int(end_str)
+                end = peso_total - 1
+
             status_code = 206
+
+    # Validación de seguridad obligatoria para el iPhone
+    if start >= peso_total or end >= peso_total or start > end:
+        return Response(
+            status_code=416, 
+            headers={"Content-Range": f"bytes */{peso_total}"}
+        )
 
     tamaño_fragmento = (end - start) + 1
 
@@ -170,6 +191,7 @@ async def stream_video(capitulo_id: int, range: str = Header(None)):
         ):
             yield chunk
 
+    # Cabeceras estrictas ordenadas para Safari
     headers = {
         "Content-Range": f"bytes {start}-{end}/{peso_total}",
         "Accept-Ranges": "bytes",
