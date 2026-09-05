@@ -58,17 +58,17 @@ async def lifespan(app: FastAPI):
     inicializar_db()
 
     # --- 2. Conectamos a Telegram ---
-    print("🚀 Conectando a Telegram...")
+    print("Conectando a Telegram...")
     await cliente.connect()
-    print("✅ Conexión establecida con éxito.")
+    print("Conexión establecida con éxito.")
     
     # --- 3. Sincronizamos ---
-    print("🔄 Reconstruyendo caché desde Telegram...")
+    print("Reconstruyendo caché desde Telegram...")
     await sincronizar_biblioteca()
     
     yield
     
-    print("🛑 Desconectando de Telegram...")
+    print("Desconectando de Telegram...")
     await cliente.disconnect()
 
 # Inicializar FastAPI (UNA SOLA VEZ)
@@ -87,6 +87,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.api_route("/", methods=["GET", "HEAD"])
+async def root():
+    return {"estado": "ok", "mensaje": "Servidor TelegramFlix activo y funcionando "}
 
 # ... (Aquí continúan tus endpoints @app.get...)
 
@@ -182,22 +186,40 @@ async def stream_video(capitulo_id: int, request: Request):
 
     tamaño_fragmento = (end - start) + 1
 
+    tamaño_fragmento = (end - start) + 1
+
+    # --- EL GENERADOR CON PRECISIÓN MILIMÉTRICA ---
     async def generador_video():
+        bytes_enviados = 0
         async for chunk in cliente.iter_download(
             mensaje.media, 
             offset=start, 
-            limit=tamaño_fragmento, 
-            request_size=1024 * 1024
+            request_size=1024 * 512 # Bajamos el bloque a 512KB para que sea más ágil en móviles
         ):
+            # ¿Cuántos bytes nos faltan para cumplir exactamente lo que pidió el iPhone?
+            faltan = tamaño_fragmento - bytes_enviados
+            
+            # Si el bloque de Telegram trae más de lo que necesitamos, lo cortamos (Slicing)
+            if len(chunk) > faltan:
+                chunk = chunk[:faltan]
+                
             yield chunk
+            
+            bytes_enviados += len(chunk)
+            
+            # Si ya cumplimos con la cuota exacta solicitada, detenemos la descarga
+            if bytes_enviados >= tamaño_fragmento:
+                break
 
+    # Cabeceras estrictas ordenadas para iOS
     headers = {
-        "Content-Range": f"bytes {start}-{end}/{peso_total}",
         "Accept-Ranges": "bytes",
         "Content-Length": str(tamaño_fragmento),
         "Content-Type": "video/mp4",
-        "Access-Control-Allow-Origin": "*",
     }
+    
+    if status_code == 206:
+        headers["Content-Range"] = f"bytes {start}-{end}/{peso_total}"
 
     return StreamingResponse(generador_video(), status_code=status_code, headers=headers)
 
