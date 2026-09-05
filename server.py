@@ -25,13 +25,9 @@ def inicializar_db():
     conexion = sqlite3.connect("database.db")
     cursor = conexion.cursor()
     
-    # 1. Borramos las tablas viejas (que no tenían la regla UNIQUE)
-    cursor.execute('DROP TABLE IF EXISTS Capitulo')
-    cursor.execute('DROP TABLE IF EXISTS Serie')
-    
-    # 2. Creamos la tabla Serie con poster_message_id como UNIQUE
+    # Usamos IF NOT EXISTS para que solo las cree la primera vez, sin borrarlas en cada reinicio
     cursor.execute('''
-        CREATE TABLE Serie (
+        CREATE TABLE IF NOT EXISTS Serie (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             titulo TEXT,
             poster_message_id INTEGER UNIQUE,
@@ -39,9 +35,8 @@ def inicializar_db():
         )
     ''')
     
-    # 3. Creamos la tabla Capitulo con video_message_id como UNIQUE
     cursor.execute('''
-        CREATE TABLE Capitulo (
+        CREATE TABLE IF NOT EXISTS Capitulo (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             serie_id INTEGER,
             temporada INTEGER,
@@ -128,7 +123,7 @@ async def obtener_catalogo():
     conexion.close()
     return {"series": series}
 
-@app.get("/stream/{capitulo_id}")
+@app.api_route("/stream/{capitulo_id}", methods=["GET", "HEAD"])
 async def stream_video(capitulo_id: int, request: Request):
     conexion = sqlite3.connect("database.db")
     cursor = conexion.cursor()
@@ -147,7 +142,14 @@ async def stream_video(capitulo_id: int, request: Request):
 
     peso_total = mensaje.document.size
 
-    # Usamos request.headers directamente para evitar problemas de compatibilidad
+    # --- RESPUESTA AL "PING" DEL IPHONE ---
+    if request.method == "HEAD":
+        return Response(headers={
+            "Accept-Ranges": "bytes",
+            "Content-Length": str(peso_total),
+            "Content-Type": "video/mp4"
+        })
+
     range_header = request.headers.get("Range")
     
     start = 0
@@ -155,7 +157,6 @@ async def stream_video(capitulo_id: int, request: Request):
     status_code = 200
 
     if range_header:
-        # Regex mejorada: detecta "0-100", "100-", y también rangos inversos "-500" que exige iOS
         range_match = re.match(r'bytes=(?P<start>\d+)?-(?P<end>\d+)?', range_header)
         if range_match:
             start_str = range_match.group("start")
@@ -164,16 +165,15 @@ async def stream_video(capitulo_id: int, request: Request):
             if start_str and end_str:
                 start = int(start_str)
                 end = int(end_str)
-            elif start_str: # Ej: "bytes=100-"
+            elif start_str: 
                 start = int(start_str)
                 end = peso_total - 1
-            elif end_str: # Ej: "bytes=-500" (Petición clásica de iPhone)
+            elif end_str: 
                 start = peso_total - int(end_str)
                 end = peso_total - 1
 
             status_code = 206
 
-    # Validación de seguridad obligatoria para el iPhone
     if start >= peso_total or end >= peso_total or start > end:
         return Response(
             status_code=416, 
@@ -191,12 +191,12 @@ async def stream_video(capitulo_id: int, request: Request):
         ):
             yield chunk
 
-    # Cabeceras estrictas ordenadas para Safari
     headers = {
         "Content-Range": f"bytes {start}-{end}/{peso_total}",
         "Accept-Ranges": "bytes",
         "Content-Length": str(tamaño_fragmento),
         "Content-Type": "video/mp4",
+        "Access-Control-Allow-Origin": "*",
     }
 
     return StreamingResponse(generador_video(), status_code=status_code, headers=headers)

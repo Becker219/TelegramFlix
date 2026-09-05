@@ -32,9 +32,21 @@ function App() {
   }
 
   const irAlInicio = () => {
-    setSerieSeleccionada(null)
-    setCapituloReproduciendo(null)
+    const volverAlCatalogo = () => {
+    setSerieSeleccionada(null);
+    setCapituloReproduciendo(null);
+    
+    // Usamos setTimeout para darle 100 milisegundos a React de volver a dibujar 
+    // el catálogo en pantalla antes de intentar mover el scroll
+    setTimeout(() => {
+      const scrollGuardado = sessionStorage.getItem('posicionScroll');
+      if (scrollGuardado) {
+        window.scrollTo(0, parseInt(scrollGuardado));
+      }
+    }, 100);
+  };
   }
+  
 
   const sincronizarBiblioteca = async () => {
     setSincronizando(true);
@@ -63,7 +75,7 @@ function App() {
     }
   };
 
-  const seriesPorCategoria = series.reduce((grupos, serie) => {
+  const seriesPorCategoria = (series || []).reduce((grupos, serie) => {
     const categoria = serie.categoria || 'General';
     if (!grupos[categoria]) grupos[categoria] = [];
     grupos[categoria].push(serie);
@@ -136,12 +148,12 @@ function App() {
         {capituloReproduciendo ? (
           <div className="player-container">
             <div className="player-header">
-              <button className="back-button" onClick={() => setCapituloReproduciendo(null)}>
+              <button className="back-button" onClick={volverAlCatalogo}>
                 ⬅ Volver a episodios
               </button>
               <h2>S{capituloReproduciendo.temporada.toString().padStart(2, '0')}E{capituloReproduciendo.numero.toString().padStart(2, '0')}</h2>
             </div>
-            <video controls autoPlay className="video-player">
+            <video controls autoPlay playsInline crossOrigin="anonymous" className="video-player">
               <source src={`https://telegramflix.onrender.com/stream/${capituloReproduciendo.id}`} type="video/mp4" />
             </video>
           </div>
@@ -149,7 +161,7 @@ function App() {
         
         serieSeleccionada ? (
           <div className="capitulos-container">
-            <button className="back-button" onClick={() => setSerieSeleccionada(null)}>
+            <button className="back-button" onClick={() => setCapituloReproduciendo(null)}>
               ⬅ Volver al catálogo
             </button>
             <h2 className="section-title">Capítulos de {serieSeleccionada.titulo}</h2>
