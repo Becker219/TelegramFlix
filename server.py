@@ -81,7 +81,9 @@ app.add_middleware(
     allow_origins=[
         "https://telegram-flix.vercel.app",  # Tu web oficial en Vercel
         "http://localhost:5173",             # Para cuando pruebes en tu PC local
-        "http://127.0.0.1:5173"
+        "http://127.0.0.1:5173",
+        "capacitor://localhost", # El origen secreto de iOS Capacitor
+        "http://localhost:3000" # El origen secreto de Android Capacitor
     ],
     allow_credentials=True,
     allow_methods=["*"],
