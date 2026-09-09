@@ -368,3 +368,8 @@ body {
     padding: 0 15px; /* Evita que el catálogo choque con los bordes del celular */
   }
 }
+
+google-cast-launcher {
+  --connected-color: #3b82f6; /* Color azul cuando está conectado a la TV */
+  --disconnected-color: white; /* Color blanco cuando está desconectado */
+}

@@ -17,6 +17,14 @@ API_ID = int(os.getenv('API_ID'))
 API_HASH = os.getenv('API_HASH')
 CHAT_ID = int(os.getenv('CHAT_ID'))
 
+ORÍGENES_PERMITIDOS = [
+    "http://localhost:5173",
+    "http://localhost:4173",
+]
+url_produccion = os.getenv('FRONTEND_URL')
+if url_produccion:
+    ORÍGENES_PERMITIDOS.append(url_produccion)
+
 # Inicializar cliente de Telegram
 SESSION_STRING = os.getenv('TELEGRAM_SESSION')
 cliente = TelegramClient(StringSession(SESSION_STRING), API_ID, API_HASH)
@@ -78,8 +86,8 @@ app = FastAPI(title="Servidor de Streaming Telegram", lifespan=lifespan)
 # Configuración CORS (Lista blanca estricta)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
+    allow_origins=ORÍGENES_PERMITIDOS,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
