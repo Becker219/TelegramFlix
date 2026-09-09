@@ -1,0 +1,35 @@
+# TelegramFlix: Servidor VOD sobre Telegram
+
+![TelegramFlix Banner](https://img.shields.io/badge/Status-Deployed-success) ![React](https://img.shields.io/badge/Frontend-React%20%2B%20Vite-blue) ![FastAPI](https://img.shields.io/badge/Backend-FastAPI-green)
+
+TelegramFlix es una aplicación web Full-Stack de Video Bajo Demanda (VOD) diseñada para utilizar canales privados de Telegram como un backend de almacenamiento en la nube, permitiendo la transmisión nativa de video (streaming) en navegadores web y televisores inteligentes.
+
+## Arquitectura y Tecnologías
+
+Este proyecto está dividido en dos capas principales, diseñadas para separar la interfaz de usuario de la lógica de transmisión y consumo de la API de Telegram.
+
+### Frontend (Cliente)
+*   **Framework:** React (construido con Vite para compilación rápida).
+*   **Despliegue:** Vercel.
+*   **Características:** Interfaz responsiva, categorización dinámica de medios y soporte nativo para **Google Cast Web SDK**, permitiendo enviar el flujo de video directamente a dispositivos Chromecast compatibles (solo en navegadores de escritorio).
+
+### Backend (Servidor de Streaming)
+*   **Framework:** FastAPI (Python).
+*   **Integración:** Telethon (Cliente de la API de Telegram para interactuar con canales).
+*   **Base de Datos:** SQLite (para almacenamiento en caché de metadatos de los capítulos y series).
+*   **Despliegue:** Render.
+*   **Características:** Implementación de streaming HTTP 206 (Range Requests) para permitir el consumo de video por fragmentos, ahorrando ancho de banda y permitiendo el avance/retroceso rápido en el reproductor.
+
+## Aviso Legal y Descargo de Responsabilidad (Disclaimer)
+
+**Este proyecto ha sido desarrollado con fines estrictamente educativos y como demostración de habilidades de ingeniería de software (portafolio personal).**
+
+*   **Uso Privado:** El código está diseñado para funcionar como un servidor multimedia privado para transmitir contenido *propiedad del usuario* o contenido libre de derechos.
+*   **Sin Afiliación:** Este proyecto no está afiliado, respaldado ni patrocinado por Telegram Messenger LLP.
+*   **Derechos de Autor:** El creador de este repositorio no promueve, facilita ni aprueba la piratería ni la distribución de material protegido por derechos de autor. Es responsabilidad exclusiva del usuario final garantizar que tiene los derechos legales para almacenar y transmitir cualquier contenido a través de su propia instancia de este software.
+
+## Características Técnicas Destacadas
+
+1.  **Aislamiento de Entorno:** Uso estricto de variables de entorno (`.env`) y `.gitignore` para proteger las credenciales de la API de Telegram y la base de datos local.
+2.  **CORS Restringido:** El backend implementa políticas CORS estrictas (lista blanca) para rechazar peticiones de orígenes no autorizados, protegiendo el consumo de red en Render.
+3.  **Sincronización Asíncrona:** Uso de rutinas asíncronas en Python (`async/await`) para escanear y actualizar el catálogo de Telegram sin bloquear el hilo principal del servidor.
