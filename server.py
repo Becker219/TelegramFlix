@@ -22,8 +22,16 @@ ORÍGENES_PERMITIDOS = [
     "http://localhost:4173",
 ]
 url_produccion = os.getenv('FRONTEND_URL')
+
+# Limpiamos el texto por si hay espacios o barras al final
 if url_produccion:
-    ORÍGENES_PERMITIDOS.append(url_produccion)
+    url_limpia = url_produccion.strip().rstrip('/')
+    ORÍGENES_PERMITIDOS.append(url_limpia)
+
+# Imprimimos la lista en los Logs de Render para confirmar qué está leyendo
+print("=== ORÍGENES CORS PERMITIDOS ===")
+print(ORÍGENES_PERMITIDOS)
+print("================================")
 
 # Inicializar cliente de Telegram
 SESSION_STRING = os.getenv('TELEGRAM_SESSION')
